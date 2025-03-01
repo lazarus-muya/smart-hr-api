@@ -9,13 +9,15 @@ from .manager import StaffUserManager
 class StaffUser(AbstractUser):
     username    = None
     staff       = models.OneToOneField(Staff, on_delete=models.CASCADE, null=True, blank=True)
+    email       = models.EmailField(unique=True)
+    phone_number = models.IntegerField(unique=True)
     is_staff    = models.BooleanField(default=False)
     is_active   = models.BooleanField(default=True)
-    phone_number = models.IntegerField(unique=True)
+    metadata    = models.JSONField(null=True, blank=True, default=dict)
     objects = StaffUserManager()
 
-    USERNAME_FIELD = "phone_number"
-    REQUIRED_FIELDS = []
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["phone_number"]
 
     @property
     def full_name(self):

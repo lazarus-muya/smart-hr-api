@@ -1,14 +1,11 @@
-from django.contrib.auth import get_user_model
-from rest_framework import viewsets
+from api.mixins import CreateListRetrieveViewSet
 
 from api.rest import *
-from api.mixins import CreateListRetrieveViewSet
 
 # from src.account.filters.staff_filters import StaffFilter
 from src.account.models import StaffUser
 from src.account.serializers import (
     EmployeeGradeSerializer,
-    UserResetPasswordSerializer,
     UserSerializer,
     StaffSerializer,
     DepartmentSerializer,
@@ -51,53 +48,3 @@ class UserListCreateAPIView(CreateListRetrieveViewSet):
     serializer_class = UserSerializer
     authentication_classes = DEFAULT_AUTH
     permission_classes = DEFAULT_PERMS
-
-
-User = get_user_model()
-# Reset password
-
-
-class UserResetPasswordViewset(viewsets.ModelViewSet, APIView):
-    serializer_class = UserResetPasswordSerializer
-    queryset = User.objects.all()
-    authentication_classes = DEFAULT_AUTH
-    permission_classes = DEFAULT_PERMS
-
-    @classmethod
-    def get_extra_actions(cls):
-        return []
-
-    def put(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        # otp = serializer.validated_data['opt']
-        email = serializer.validated_data["email"]
-
-        search_user = User.objects.filter(staff__email=email)
-        if search_user.exists():
-            user = search_user.first()
-
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
-
-            reset_link = "{}/password-reset/{}/{}/".format(
-                settings.FRONTEND_URL, uid, token
-            )
-
-            subject = "Password Reset"
-            message = render_to_string(
-                "password_reset_email.html",
-                {
-                    "reset_link": reset_link,
-                },
-            )
-            email_message = EmailMessage(
-                subject,
-                message,
-                to=["chairman@iname.com"],
-                from_email=settings.EMAIL_HOST,
-            )
-            email_message.send()
-            return Response({"Success": "Password reset email sent."})
-        return Response({"Info": "Done"})

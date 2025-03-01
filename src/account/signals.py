@@ -42,6 +42,7 @@ def create_user_for_staff(sender, instance, created, **kwargs):
         user = StaffUser.objects.create(
             staff=instance,
             phone_number=instance.phone_number,
+            email=instance.email,
             is_active=True,
             is_staff=True,
             is_superuser=False,
@@ -60,6 +61,7 @@ def create_user_for_staff(sender, instance, created, **kwargs):
 def log_user_deleted(sender, instance, **kwargs):
     """Try block for testing purpose."""
     try:
+        # Staff.objects.filter(phone_number=instance.staff.phone_number).delete()
         user_delete_logger.warning("[{}] Deleted!".format(instance.staff.full_name))
     except:
         pass

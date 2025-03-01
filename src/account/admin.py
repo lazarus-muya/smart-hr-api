@@ -11,11 +11,12 @@ class StaffAdmin(admin.ModelAdmin):
     list_display = (
         "staff_id",
         "full_name",
+        "email",
         "phone_number",
         "department",
         "joining_date",
     )
-    readonly_fields = ("staff_id",)
+    # readonly_fields = ("staff_id",)
 
     def full_name(self, obj):
         return obj.full_name
@@ -26,7 +27,7 @@ class StaffUserAdmin(UserAdmin):
     add_form = StaffUserCreationForm
     form = StaffUserChangeForm
     model = StaffUser
-    list_display = ("staff_id", "staff", "phone_number", "role")
+    list_display = ("staff_id", "staff", "email", "phone_number", "role")
     list_filter = ("is_active", "is_staff", "is_superuser")
     search_fields = ("phone_number",)
     ordering = ("phone_number",)
@@ -46,7 +47,7 @@ class StaffUserAdmin(UserAdmin):
         return "Staff"
 
     fieldsets = (
-        ("Personal Details", {"fields": ("phone_number", "staff")}),
+        ("Personal Details", {"fields": ("phone_number", "email", "staff")}),
         (
             "Permisions",
             {
@@ -63,6 +64,7 @@ class StaffUserAdmin(UserAdmin):
                 "classes": ("wide",),
                 "fields": (
                     "phone_number",
+                    "email",
                     "password1",
                     "password2",
                     "is_staff",

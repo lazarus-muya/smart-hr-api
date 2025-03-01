@@ -32,16 +32,6 @@ class DepartmentSerializer(serializers.ModelSerializer):
         model = Department
         fields = "__all__"
 
-
-class UserResetPasswordSerializer(serializers.Serializer):
-    # otp = serializers.CharField(default=random_int_id(6), label="OTP", help_text="OTP")
-    email = serializers.EmailField(required=True)
-
-    class Meta:
-        model = StaffUser
-        fields = ("email",)
-
-
 class StaffSerializer(serializers.ModelSerializer):
     documents = serializers.SerializerMethodField()
     trainings = serializers.SerializerMethodField()
@@ -121,6 +111,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             "staff_id",
             "staff",
+            "email",
+            "phone_number",
             "last_login",
             "is_superuser",
             "first_name",
@@ -129,6 +121,5 @@ class UserSerializer(serializers.ModelSerializer):
             "date_joined",
             "is_staff",
             "is_active",
-            "phone_number",
         )
         depth = 1

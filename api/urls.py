@@ -4,7 +4,6 @@ from src.account.api_views import (
     DepartmentListCreateAPIView,
     StaffListCreateAPIView,
     UserListCreateAPIView,
-    UserResetPasswordViewset,
 )
 from src.directory.views import DocumentViewset, TransmitalViewset
 from src.finance.api_views import (
@@ -56,7 +55,6 @@ router.register(
     basename="performance-review",
 )
 router.register(r"users", UserListCreateAPIView, basename="user")
-router.register(r"password-reset", UserResetPasswordViewset, basename="password-reset")
 router.register(r"feedbacks", FeedbackListCreateAPIView, basename="feedbacks")
 router.register(r"surveys", SurveyListCreateAPIView, basename="surveys")
 router.register(

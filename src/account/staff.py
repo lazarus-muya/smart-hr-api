@@ -49,11 +49,11 @@ class  Staff(models.Model):
     first_name      = TitleCaseField(max_length=255)
     middle_name     = TitleCaseField(max_length=255, null=True, blank=True)
     last_name       = TitleCaseField(max_length=255)
-    profile_picture = models.ImageField(null=True, blank=True, upload_to="staffs/profile/")
+    email           = models.EmailField(unique=True)
+    phone_number    = models.CharField(max_length=20, unique=True)
     date_of_birth   = models.DateField()
     gender          = TitleCaseField(max_length=14, default=GenderChoices.DEFAULT, choices=GenderChoices.choices)
-    email           = models.EmailField(null=True, blank=True, unique=True)
-    phone_number    = models.BigIntegerField(null=True, blank=True, unique=True)
+    profile_picture = models.ImageField(null=True, blank=True, upload_to="staffs/profile/")
     id_number       = models.BigIntegerField(null=True, blank=True, unique=True)
     address         = models.TextField(null=True, blank=True)
     joining_date    =  models.DateField(default=timezone.now)
@@ -73,7 +73,9 @@ class  Staff(models.Model):
             models.Index(fields=["phone_number"], name="staff_phone_number_idx"),
             models.Index(fields=["id_number"], name="staff_id_number_idx"),
             models.Index(fields=["staff_id"], name="staff_staff_id_idx"),
+            models.Index(fields=["email"], name="staff_staff_email_idx"),
         ]
+        ordering = ["-joining_date"]
         verbose_name        = "Staff"
         verbose_name_plural = "Staffs"
 
