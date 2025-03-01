@@ -18,10 +18,11 @@ class Attendance(models.Model):
 
     class Meta:
         verbose_name = "Attendance"
-        verbose_name_plural = "Attendances "
+        verbose_name_plural = "Attendances"
 
     @property
     def hours_worked(self):
+        
         if not self.clock_out_time:
             return 0
         # if self.clock_out_time is None:
@@ -51,9 +52,12 @@ class LeaveRequest(models.Model):
 class TrainingProgram(models.Model):
     program_name    = models.CharField(max_length=255)
     description     = models.TextField(null=True, blank=True)
+    trainer        = models.CharField(max_length=30, null=True, blank=True)
+    duration        = models.CharField(max_length=30, null=True, blank=True)
     start_date      = models.DateField()
     end_date        = models.DateField()
     staffs          = models.ManyToManyField(Staff)
+    # Added duration and trainer field
 
     def __str__(self):
         return self.program_name

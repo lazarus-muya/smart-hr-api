@@ -27,6 +27,8 @@ class Benefit(models.Model):
     benefit_type = models.CharField(max_length=255)
     contribution_amount = models.DecimalField(max_digits=10, decimal_places=2)
 
+    # TODO: change contribution_amount to amount
+
     class Meta:
         verbose_name = "Benefit"
         verbose_name_plural = "Benefits"
@@ -69,7 +71,7 @@ class Deduction(models.Model):
 
 
 class PayrollRecord(models.Model):
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    staff = models.ForeignKey("account.Staff", on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()  # validators=[validate_end_date, ]
     month = models.CharField(max_length=20, choices=MonthsOptions.choices)
@@ -84,16 +86,20 @@ class PayrollRecord(models.Model):
     payment_method = models.CharField(
         max_length=20, choices=PaymentMethods.choices, default=PaymentMethods.BANK)
 
+    # TODO: Add Overtime Rate, Pay Date, Overtime Hours
+    # TODO: remove salary_type
+    # TODO: change basic_pay to basic_salary
+
     class Meta:
-        ordering = ['start_date', 'month']
+        ordering = ['-start_date', '-month']
         get_latest_by = ['-start_date']
         verbose_name = "Payroll Record"
         verbose_name_plural = "Payroll Records"
 
     @property
     def net_pay(self):
-        allowances = sum([i.amount for i in self.allowances.all()])
-        deductions = sum([i.amount for i in self.deductions.all()])
+        allowances = sum([i.amount for i in self.allowances.prefetch_related("allowances").all()])
+        deductions = sum([i.amount for i in self.deductions.prefetch_related("deductions").all()])
         return (float(self.basic_pay) + float(self.bonus) + float(allowances)) - float(deductions)
 
     def __str__(self):

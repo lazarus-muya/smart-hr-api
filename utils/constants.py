@@ -1,9 +1,12 @@
 from rest_framework import permissions, authentication
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 # from rest_framework_filters.backends import DjangoFilterBackend
 
-DEFAULT_AUTH = [authentication.TokenAuthentication, authentication.BasicAuthentication]
+DEFAULT_AUTH = [authentication.TokenAuthentication, authentication.BasicAuthentication, JSONWebTokenAuthentication]
 DEFAULT_PERMS = [permissions.IsAuthenticated, permissions.IsAdminUser]
+# DEFAULT_AUTH  = [];
+# DEFAULT_PERMS = [];
 # DEFAULT_FILTER_BACKENDS = (DjangoFilterBackend, )
 
 LOGGER_VERSION = 1

@@ -4,25 +4,22 @@ from django.conf import settings
 from utils.helpers import random_int_id
 
 from utils.options import (GeneralStatus, JobSources, InterviewStatus,
-                           JobStatus, InterviewTypes)
+                           JobStatus, InterviewTypes, RecruitmentStatus)
 from src.account.staff import Department
 
 
 class Candidate(models.Model):
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
+    first_name  = models.CharField(max_length=255)
+    middle_name = models.CharField(max_length=255, null=True, blank=True)
+    last_name   = models.CharField(max_length=255)
     phone = models.CharField(max_length=20)
-    email = models.EmailField(null=True, blank=True)
-    address = models.CharField(max_length=255, null=True, blank=True)
-    resume = models.FileField(
-        upload_to='files/applications/resumes/', null=True, blank=True)
-    cover_letter = models.FileField(
-        upload_to='files/applications/cover_letters/', null=True, blank=True)
-    source = models.CharField(
-        max_length=255, choices=JobSources.choices, default=JobSources.OTHER)
-    status = models.CharField(
-        max_length=50, choices=GeneralStatus.choices, default=GeneralStatus.DEFAULT)
-    notes = models.TextField(null=True, blank=True)
+    email = models.EmailField()
+    address     = models.CharField(max_length=255, null=True, blank=True)
+    resume      = models.FileField(upload_to='files/applications/resumes/')
+    cover_letter    = models.FileField(upload_to='files/applications/cover_letters/', null=True, blank=True)
+    source  = models.CharField(max_length=255, choices=JobSources.choices, default=JobSources.OTHER)
+    status  = models.CharField(max_length=50, choices=GeneralStatus.choices, default=GeneralStatus.DEFAULT)
+    notes   = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.full_name
@@ -63,7 +60,8 @@ class JobPosition(models.Model):
 
 class Interview(models.Model):
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
-    interviewers = models.ManyToManyField(settings.AUTH_USER_MODEL)
+    position = models.ForeignKey(JobPosition, on_delete=models.CASCADE)
+    interviewers = models.ManyToManyField("account.Staff", related_name='interviews')
     interview_date = models.DateTimeField()
     interview_type = models.CharField(
         max_length=12, choices=InterviewTypes.choices, default=InterviewTypes.ON_SITE)
@@ -109,3 +107,15 @@ class Vacancy(models.Model):
         ordering = ["-start_date"]
         verbose_name = "Vacancy"
         verbose_name_plural = "Vacancies"
+
+class Recruit(models.Model):
+    interview = models.ForeignKey(Interview, on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, default=RecruitmentStatus.UNDER_REVIEW, choices=GeneralStatus.choices)
+    comment = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.interview.candidate.full_name
+
+    class Meta:
+        verbose_name = "Recruit"
+        verbose_name_plural = "Recruits"

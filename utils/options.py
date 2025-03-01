@@ -168,3 +168,9 @@ class EducationLevels(models.TextChoices):
     MASTERS = "Masters"
     DOCTORATE = "Doctorate"
     OTHER = "Other"
+
+class RecruitmentStatus(models.TextChoices):
+    UNDER_REVIEW = "Under Review"
+    ACCEPTED = "Accepted"
+    REJECTED = "Rejected"
+    HIRED = "Hired"

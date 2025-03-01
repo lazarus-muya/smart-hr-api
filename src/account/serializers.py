@@ -1,4 +1,4 @@
-import json
+from datetime import datetime as dt
 from rest_framework import serializers
 
 from src.administration.serializers import (
@@ -55,6 +55,7 @@ class StaffSerializer(serializers.ModelSerializer):
     leaves = LeaveRequestSerializer(
         many=True, read_only=True, source="leaverequest_set"
     )
+    date_of_birth = serializers.SerializerMethodField()
 
     class Meta:
         model = Staff
@@ -99,6 +100,11 @@ class StaffSerializer(serializers.ModelSerializer):
 
     def get_attendance(self, obj):
         return AttendanceSerializer(obj.attendance, many=True).data
+    
+    def get_date_of_birth(self, obj):
+        if type(obj.date_of_birth) == dt:
+            return obj.date_of_birth.date()
+        return obj.date_of_birth
 
 
 class WorkPlaceSerializer(serializers.ModelSerializer):

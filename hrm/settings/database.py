@@ -11,12 +11,12 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     },
-    "postgres": {
-        "ENGINE": os.environ["POSTGRES_ENGINE"],
-        "NAME": os.environ["POSTGRES_DB"],
-        "USER": os.environ["POSTGRES_USER"],
-        "HOST": os.environ["POSTGRES_HOST"],
-        "POST": os.environ["DB_PORT"],
-        "PASSWORD": os.environ["POSTGRES_PASSWORD"],
-    },
+    # "postgres": {
+    #     "ENGINE": os.environ["POSTGRES_ENGINE"],
+    #     "NAME": os.environ["POSTGRES_DB"],
+    #     "USER": os.environ["POSTGRES_USER"],
+    #     "HOST": os.environ["POSTGRES_HOST"],
+    #     "POST": os.environ["DB_PORT"],
+    #     "PASSWORD": os.environ["POSTGRES_PASSWORD"],
+    # },
 }

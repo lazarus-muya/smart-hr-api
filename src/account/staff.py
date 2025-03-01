@@ -15,6 +15,9 @@ class Department(models.Model):
     class Meta:
         verbose_name = "Department"
         verbose_name_plural = "Departments"
+    
+    def hod(self):
+        return self.hoddepartment.first()
 
 
 class WorkPlace(models.Model):
@@ -44,7 +47,7 @@ class EmployeeGrade(models.Model):
 class  Staff(models.Model):
     staff_id        = TitleCaseField(max_length=16, default=timestamp_id(16), unique=True, primary_key=True)
     first_name      = TitleCaseField(max_length=255)
-    middle_name     = TitleCaseField(max_length=255)
+    middle_name     = TitleCaseField(max_length=255, null=True, blank=True)
     last_name       = TitleCaseField(max_length=255)
     profile_picture = models.ImageField(null=True, blank=True, upload_to="staffs/profile/")
     date_of_birth   = models.DateField()
@@ -77,6 +80,9 @@ class  Staff(models.Model):
     @property
     def full_name(self):
         return "{} {}".format(self.first_name, self.last_name)
+
+    def get_absolute_url(self):
+        return "staffs/{}".format(self.staff_id)
 
     @property
     def staff_documents(self):
@@ -112,7 +118,7 @@ class  Staff(models.Model):
     @property
     def attendance(self):
         # return self.attendance_set.all()
-        return []
+        return self.staff_name.all()
 
     @property
     def staff_leaves(self):
@@ -128,4 +134,6 @@ class HeadOfDepartment(models.Model):
     class Meta:
         verbose_name = "Head of Department"
         verbose_name_plural = "Heads of Departments"
+
+
  

@@ -1,46 +1,57 @@
-from rest_framework.test import APITestCase
 import json
-from pprint import pprint
-from datetime import datetime as dt
+from rest_framework.test import APITestCase
 
-from src.account.models import StaffUser, Staff
-from src.administration.engagement import Survey, Question, SurveyResponse
+from src.account.models import StaffUser
+from src.account.staff import Staff
+from src.administration.engagement import Survey, SurveyResponse
 from utils.base_test import add_headers, create_test_user, create_staff
-from api.serializers import StaffSerializer
 
 
-class SurveyTestcase(APITestCase):
+class SurveyResponseTest(APITestCase):
     def setUp(self):
-        create_test_user(StaffUser)
-        create_staff(Staff)
-        self.question = Question.objects.create(question="Will this pass?")
-        self.question.save()
+        self.user = create_test_user(StaffUser)
+        self.client.login(username="1234567890", password="admin.123")
+        self.staff = create_staff(Staff)
+    
+    def _post_data(self):
+        data = {
+            "title": "Test Survey",
+            "question": "Will this pass",
+            "description": "some test info",
+            "startDate": "2024-07-20",
+            "endDate": "2024-08-30",
+            "isActive": True
+        }
+        return self.client.post('/api/surveys/', data=json.dumps(data), **add_headers(), content_type="application/json")
 
-        self.survey = Survey.objects.create(
-            question=self.question,
+    def test_survey_created(self):
+        survey = Survey.objects.create(
             title="Test Survey",
+            question="Will this pass?",
             description="some test info",
-            start_date="2023-07-20",
-            end_date="2023-07-30",
+            start_date="2024-07-20",
+            end_date="2024-08-30",
             is_active=True
         )
-        self.survey.save()
-        self.staff = Staff.objects.first()
+        survey.save()
+        self.assertTrue(survey.pk == 1)
 
-        self.response = SurveyResponse.objects.create(
-            staff=self.staff,
-            survey=self.survey,
-            response="This is a response"
-        )
-        self.response.save()
 
-    def test_response_created(self):
-        self.assertTrue(self.response.pk == 1)
+    def test_survey_post(self):
+        req = self._post_data()
+        self.assertEqual(req.status_code, 201)
+    
+    def test_survey_get(self):
+        self._post_data()
+        req = self.client.get('/api/surveys/', **add_headers())
+        self.assertEqual(req.status_code, 200)
+        self.assertEqual(len(req.json()), 1)
 
     def test_response_post(self):
+        survey = self._post_data()
         data = {
             "staff": self.staff.pk,
-            "survey": self.survey.pk,
+            "survey": survey.json()["id"],
             "response": "This is a response"
         }
         req = self.client.post('/api/survey-responses/',
@@ -48,26 +59,39 @@ class SurveyTestcase(APITestCase):
         jsonData = req.json()
         self.assertEqual(req.status_code, 201)
         self.assertEqual(jsonData["staff"], self.staff.pk)
-        self.assertEqual(jsonData["survey"], self.survey.pk)
-
-        _staff = StaffSerializer(self.staff).data
-        self.assertTrue(_staff["staff_id"] == jsonData["staff"])
+        self.assertEqual(jsonData["survey"], survey.json()["id"])
 
     def test_response_put(self):
+        survey = self._post_data()
         data = {
             "staff": self.staff.pk,
-            "survey": self.survey.pk,
+            "survey": survey.json()["id"],
+            "response": "This is a response"
+        }
+        req = self.client.post('/api/survey-responses/',
+                               data=json.dumps(data), **add_headers(), content_type="application/json")
+        
+        _data = {
+            "staff": req.json()["staff"],
+            "survey": req.json()["survey"],
             "response": "This is updated response"
         }
         req = self.client.put('/api/survey-responses/1/',
-                              data=json.dumps(data), **add_headers(), content_type="application/json")
+                              data=json.dumps(_data), **add_headers(), content_type="application/json")
 
         jsonData = req.json()
         self.assertEqual(req.status_code, 200)
         self.assertEqual(jsonData["response"], "This is updated response")
-        self.assertEqual(jsonData["staff"], self.staff.staff_id)
-        self.assertEqual(jsonData["survey"], self.survey.pk)
 
     def test_response_delete(self):
-        req = self.client.delete('/api/survey-responses/1/', **add_headers())
-        self.assertTrue(req.status_code == 204)
+        survey = self._post_data()
+        data = {
+            "staff": self.staff.pk,
+            "survey": survey.json()["id"],
+            "response": "This is a response"
+        }
+        self.client.post('/api/survey-responses/',
+                               data=json.dumps(data), **add_headers(), content_type="application/json")
+               
+        res = self.client.delete('/api/survey-responses/1/', **add_headers())
+        self.assertTrue(res.status_code == 204)

@@ -3,13 +3,13 @@ from django.db import models
 
 from utils.options import YesNoOptions, FeedbackTypes, RatingChoices
 from utils.helpers import random_int_id
-from src.account.models import Staff
+# from src.account.models import Staff
 
 Qs = models.QuerySet
 
 
 class FeedBack(models.Model):
-    staff = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True, blank=True)
+    staff = models.ForeignKey("account.Staff", on_delete=models.SET_NULL, null=True, blank=True)
     feedback = models.TextField(max_length=1000)
     feedback_type = models.CharField(
         max_length=20, choices=FeedbackTypes.choices, default=FeedbackTypes.OTHER
@@ -32,6 +32,11 @@ class FeedBack(models.Model):
         return super().save(*args, **kwargs)
 
 
+"""
+    Question model was ignored and serves no purpose.
+    It will be removed in future.
+"""
+
 class Question(models.Model):
     question = models.TextField(max_length=500)
 
@@ -46,7 +51,8 @@ class Question(models.Model):
 class Survey(models.Model):
     survey_id = models.CharField(max_length=12, default=random_int_id(12))
     title = models.CharField(max_length=100)
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    # question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question = models.TextField(max_length=500)
     description = models.TextField()
     start_date = models.DateField()
     end_date = models.DateField()
@@ -65,7 +71,7 @@ class Survey(models.Model):
 
 
 class SurveyResponse(models.Model):
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+    staff = models.ForeignKey("account.Staff", on_delete=models.CASCADE)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     response = models.TextField(null=True, blank=True)
 
