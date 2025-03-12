@@ -2,8 +2,10 @@ from rest_framework import routers
 
 from src.account.api_views import (
     DepartmentListCreateAPIView,
-    StaffListCreateAPIView,
+    StaffApiView,
     UserListCreateAPIView,
+    WorkplaceListCreateAPIView,
+    GradeRetrieveUpdateDestroyAPIView
 )
 from src.directory.views import DocumentViewset, TransmitalViewset
 from src.finance.api_views import (
@@ -14,6 +16,7 @@ from src.finance.api_views import (
     SalaryComponentListCreateAPIView,
     SalaryStructureListCreateAPIView,
     TaxInformationListCreateAPIView,
+    BankListCreateAPIView,
 )
 
 from src.administration.api_views import *
@@ -30,7 +33,10 @@ router.register(
 router.register(
     r"salary-components", SalaryComponentListCreateAPIView, basename="salary-component"
 )
-router.register(r"staffs", StaffListCreateAPIView, basename="staffs")
+router.register(r"staffs", StaffApiView, basename="staffs")
+router.register(r"grades", GradeRetrieveUpdateDestroyAPIView, basename="grades")
+router.register(r"banks", BankListCreateAPIView, basename="banks")
+router.register(r"workplaces", WorkplaceListCreateAPIView, basename="workplaces")
 router.register(
     r"payroll-records", PayrollRecordListCreateAPIView, basename="payroll-record"
 )

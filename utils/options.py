@@ -13,6 +13,10 @@ class StaffStatus(models.TextChoices):
     SUSPENDED = "Suspended"
     TERMINATED = "Terminated"
     ON_HOLD = "On Hold"
+    RESIGNED = "Resigned"
+    RETIRED = "Retired"
+    ON_LEAVE = "On Leave"
+    DISMISSED = "Dismissed"
 
 
 class LeaveType(models.TextChoices):
@@ -158,16 +162,15 @@ class RatingChoices(models.IntegerChoices):
 
 
 class EducationLevels(models.TextChoices):
-    DEFAULT = "No Degree"
+    DEFAULT = "Other"
     CERTIFICATE = "Certificate"
     HIGH_SCHOOL = "High School"
     COLLEGE = "College"
     DIPLOMA = "Diploma"
-    BACHELOR = "Bachelor"
+    BACHELOR = "Bachelors"
     DEGREE = "degree"
     MASTERS = "Masters"
     DOCTORATE = "Doctorate"
-    OTHER = "Other"
 
 class RecruitmentStatus(models.TextChoices):
     UNDER_REVIEW = "Under Review"

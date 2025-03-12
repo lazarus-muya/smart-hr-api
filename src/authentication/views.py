@@ -77,10 +77,10 @@ class UserLoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
-        phone_number = request.data.get("phone_number")
+        email = request.data.get("email")
         password = request.data.get("password")
 
-        if not phone_number or not password:
+        if not email or not password:
             return Response(
                 {
                     "code": FIELD_MISSING,
@@ -89,7 +89,7 @@ class UserLoginView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        user = authenticate(request, username=phone_number, password=password)
+        user = authenticate(request, username=email, password=password)
 
         if user is not None:
             return Response(

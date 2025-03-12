@@ -7,9 +7,10 @@ from src.administration.serializers import (
     StaffTrainingSerializer,
 )
 from src.directory.serializers import DocumentSerializer
+from src.finance.bank import Bank
 from src.finance.serializers import BankSerializer, PayrollRecordSerializer
 
-from .staff import EmployeeGrade, Staff, Department, HeadOfDepartment
+from .staff import EmployeeGrade, Staff, Department, HeadOfDepartment, WorkPlace
 from .models import StaffUser
 
 from .staff import WorkPlace
@@ -18,6 +19,12 @@ from .staff import WorkPlace
 class HodSerializer(serializers.ModelSerializer):
     class Meta:
         model = HeadOfDepartment
+        fields = "__all__"
+
+
+class WorkplaceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkPlace
         fields = "__all__"
 
 
@@ -39,27 +46,19 @@ class StaffSerializer(serializers.ModelSerializer):
     attendance = serializers.SerializerMethodField()
     leaves = serializers.SerializerMethodField()
     hod = serializers.SerializerMethodField()
-    department = DepartmentSerializer(read_only=True)
-    grade = EmployeeGradeSerializer(read_only=True)
-    bank = BankSerializer(read_only=True)
+    workplace = serializers.PrimaryKeyRelatedField(queryset=WorkPlace.objects.all())
+    department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())
+    grade = serializers.PrimaryKeyRelatedField(queryset=EmployeeGrade.objects.all())
+    bank = serializers.PrimaryKeyRelatedField(queryset=Bank.objects.all())
     leaves = LeaveRequestSerializer(
         many=True, read_only=True, source="leaverequest_set"
     )
-    date_of_birth = serializers.SerializerMethodField()
+    # date_of_birth = serializers.SerializerMethodField()
 
     class Meta:
         model = Staff
         fields = "__all__"
-
-    def validate(self, attr):
-        request = self.context["request"]
-        staff_id = attr["staff_id"]
-        staff = Staff.objects.filter(staff_id=staff_id).exists()
-        if staff and request.method and request.method == "POST":
-            raise serializers.ValidationError(
-                detail="Staff with this details already exists.", code=409
-            )
-        return attr
+        depth = 1
 
     def get_documents(self, obj):
         _serializer = DocumentSerializer(obj.staff_documents, many=True)
@@ -95,13 +94,6 @@ class StaffSerializer(serializers.ModelSerializer):
         if type(obj.date_of_birth) == dt:
             return obj.date_of_birth.date()
         return obj.date_of_birth
-
-
-class WorkPlaceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = WorkPlace
-        fields = "__all__"
-
 
 class UserSerializer(serializers.ModelSerializer):
     staff = StaffSerializer(read_only=True, required=False)

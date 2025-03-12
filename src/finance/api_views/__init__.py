@@ -1,14 +1,33 @@
-
 from rest_framework.response import Response
 
 
 from api.rest import *
 from src.finance.models import Allowance, Deduction
-from src.finance.serializers import AllowanceSerializer, BenefitSerializer, DeductionSerializer, PayrollRecordSerializer, SalaryComponentSerializer, SalaryStructureSerializer, TaxInformationSerializer
+from src.finance.bank import Bank
+from src.finance.serializers import (
+    AllowanceSerializer,
+    BenefitSerializer,
+    DeductionSerializer,
+    PayrollRecordSerializer,
+    SalaryComponentSerializer,
+    SalaryStructureSerializer,
+    TaxInformationSerializer,
+    BankSerializer
+)
 from utils.constants import DEFAULT_AUTH, DEFAULT_PERMS
 
 
+# Bank
+class BankListCreateAPIView(CreateListRetrieveViewSet):
+    queryset = Bank.objects.all()
+    serializer_class = BankSerializer
+    authentication_classes = DEFAULT_AUTH
+    permission_classes = DEFAULT_PERMS
+
+
 # Salary
+
+
 class SalaryStructureListCreateAPIView(CreateListRetrieveViewSet):
     queryset = SalaryStructure.objects.all()
     serializer_class = SalaryStructureSerializer

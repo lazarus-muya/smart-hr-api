@@ -1,13 +1,12 @@
+from datetime import timedelta
 from rest_framework import permissions, authentication
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
-# from rest_framework_filters.backends import DjangoFilterBackend
-
 DEFAULT_AUTH = [authentication.TokenAuthentication, authentication.BasicAuthentication, JSONWebTokenAuthentication]
 DEFAULT_PERMS = [permissions.IsAuthenticated, permissions.IsAdminUser]
-# DEFAULT_AUTH  = [];
-# DEFAULT_PERMS = [];
-# DEFAULT_FILTER_BACKENDS = (DjangoFilterBackend, )
+
+DEBUG_PERMS = [permissions.AllowAny]
+DEBUG_AUTH = []
 
 LOGGER_VERSION = 1
 LOGGER_LEVEL = {
@@ -31,3 +30,5 @@ LOGGER_FILENAMES = {
     "staffs": "logs/staff-logs.log",
     "documents": "logs/directory-logs.log",
 }
+TOKEN_EXPIRY = timedelta(minutes=30)
+REFRESH_TOKEN_EXPIRY = timedelta(days=1)

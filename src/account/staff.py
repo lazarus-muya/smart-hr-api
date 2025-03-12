@@ -25,10 +25,12 @@ class WorkPlace(models.Model):
     address         = models.TextField(null=True, blank=True)
     openning_time   = models.TimeField(null=True, blank=True)
     clossing_time   = models.TimeField(null=True, blank=True)
+    weekend_openning_time   = models.TimeField(null=True, blank=True)
+    weekend_clossing_time   = models.TimeField(null=True, blank=True)
     open_on_weekends = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.work_place_name
+        return self.workplace_name
 
     class Meta:
         verbose_name        = "Work Location"
@@ -54,16 +56,16 @@ class  Staff(models.Model):
     date_of_birth   = models.DateField()
     gender          = TitleCaseField(max_length=14, default=GenderChoices.DEFAULT, choices=GenderChoices.choices)
     profile_picture = models.ImageField(null=True, blank=True, upload_to="staffs/profile/")
-    id_number       = models.BigIntegerField(null=True, blank=True, unique=True)
+    id_number       = models.CharField(max_length=14, null=True, blank=True)
     address         = models.TextField(null=True, blank=True)
     joining_date    =  models.DateField(default=timezone.now)
-    acccess_card    = TitleCaseField(max_length=12, null=True, blank=True, unique=True)
-    account_number  = models.BigIntegerField(null=True, blank=True, unique=True)
+    acccess_card    = models.CharField(max_length=12, null=True, blank=True)
+    account_number  = models.CharField(max_length=20, null=True, blank=True)
     education_level = TitleCaseField(max_length=14, choices=EducationLevels.choices, default=EducationLevels.DEFAULT)
-    status          = models.CharField(max_length=20, choices=StaffStatus.choices, default=StaffStatus.ACTIVE)
+    status          = TitleCaseField(max_length=20, choices=StaffStatus.choices, default=StaffStatus.ACTIVE)
     skills          = models.TextField(null=True, blank=True)
     bank            = models.ForeignKey(Bank, db_column="staff_bank_name", on_delete=models.SET_NULL, null=True, blank=True,)
-    work_place      = models.ForeignKey(WorkPlace, on_delete=models.SET_NULL, null=True, blank=True)
+    workplace       = models.ForeignKey(WorkPlace, on_delete=models.SET_NULL, null=True, blank=True)
     grade           = models.ForeignKey(EmployeeGrade, on_delete=models.SET_NULL, null=True, blank=True)
     department      = models.ForeignKey(Department, related_name="staffdepartment", on_delete=models.SET_NULL, null=True, blank=True)
     medical_card_number = TitleCaseField(max_length=12, null=True, blank=True)
